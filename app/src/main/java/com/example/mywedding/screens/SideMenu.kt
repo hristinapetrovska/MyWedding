@@ -55,24 +55,16 @@ fun SideMenu(
                 onPageClick(DashboardPage.TODOS)
             }
 
-            MenuItem(Icons.Filled.Groups, if (language == AppLanguage.ENGLISH) "Guests" else "Гости") {
-                onPageClick(DashboardPage.GUESTS)
+            MenuItem(Icons.Filled.Category, if (language == AppLanguage.ENGLISH) "Categories" else "Категории") {
+                onPageClick(DashboardPage.TODOS)
+            }
+
+            MenuItem(Icons.Filled.Contacts, if (language == AppLanguage.ENGLISH) "Contacts" else "Контакти") {
+                onPageClick(DashboardPage.TODOS)
             }
 
             MenuItem(Icons.Filled.AttachMoney, if (language == AppLanguage.ENGLISH) "Budget" else "Буџет") {
                 onPageClick(DashboardPage.BUDGET)
-            }
-
-            MenuItem(Icons.Filled.Storefront, if (language == AppLanguage.ENGLISH) "Vendors" else "Добавувачи") {
-                onPageClick(DashboardPage.VENDORS)
-            }
-
-            MenuItem(Icons.Filled.Event, if (language == AppLanguage.ENGLISH) "Schedule" else "Распоред") {
-                onPageClick(DashboardPage.SCHEDULE)
-            }
-
-            MenuItem(Icons.Filled.StickyNote2, if (language == AppLanguage.ENGLISH) "Notes" else "Белешки") {
-                onPageClick(DashboardPage.NOTES)
             }
 
             MenuItem(Icons.Filled.Settings, if (language == AppLanguage.ENGLISH) "Settings" else "Поставки") {

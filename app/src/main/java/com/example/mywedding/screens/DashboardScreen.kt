@@ -1,6 +1,5 @@
 package com.example.mywedding.screens
 
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -9,25 +8,22 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AttachMoney
 import androidx.compose.material.icons.filled.CalendarMonth
+import androidx.compose.material.icons.filled.CardGiftcard
 import androidx.compose.material.icons.filled.Checklist
 import androidx.compose.material.icons.filled.Event
+import androidx.compose.material.icons.filled.EventSeat
 import androidx.compose.material.icons.filled.Groups
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.MoreHoriz
+import androidx.compose.material.icons.filled.StickyNote2
 import androidx.compose.material.icons.filled.NotificationsNone
+import androidx.compose.material.icons.filled.PhotoLibrary
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Storefront
-import androidx.compose.material.icons.filled.StickyNote2
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -43,7 +39,7 @@ import java.util.Locale
 import java.util.concurrent.TimeUnit
 
 enum class DashboardPage {
-    HOME, TODOS, GUESTS, BUDGET, VENDORS, SCHEDULE, NOTES, SETTINGS
+    HOME, TODOS, GUESTS, BUDGET, RESTAURANTS, SEATING, GIFTS, SCHEDULE, NOTES, MEMORIES, SETTINGS
 }
 
 @Composable
@@ -70,14 +66,17 @@ fun DashboardScreen(
             DashboardPage.TODOS -> SimplePage("To-dos", Icons.Filled.Checklist) { currentPage = DashboardPage.HOME }
             DashboardPage.GUESTS -> SimplePage("Guests", Icons.Filled.Groups) { currentPage = DashboardPage.HOME }
             DashboardPage.BUDGET -> SimplePage("Budget", Icons.Filled.AttachMoney) { currentPage = DashboardPage.HOME }
-            DashboardPage.VENDORS -> SimplePage("Vendors", Icons.Filled.Storefront) { currentPage = DashboardPage.HOME }
+            DashboardPage.RESTAURANTS -> SimplePage("Restaurants", Icons.Filled.Storefront) { currentPage = DashboardPage.HOME }
+            DashboardPage.SEATING -> SimplePage("Seating Plan", Icons.Filled.EventSeat) { currentPage = DashboardPage.HOME }
+            DashboardPage.GIFTS -> SimplePage("Gift Registry", Icons.Filled.CardGiftcard) { currentPage = DashboardPage.HOME }
             DashboardPage.SCHEDULE -> SimplePage("Schedule", Icons.Filled.Event) { currentPage = DashboardPage.HOME }
             DashboardPage.NOTES -> SimplePage("Notes", Icons.Filled.StickyNote2) { currentPage = DashboardPage.HOME }
+            DashboardPage.MEMORIES -> SimplePage("Memories", Icons.Filled.PhotoLibrary) { currentPage = DashboardPage.HOME }
             DashboardPage.SETTINGS -> SimplePage("Settings", Icons.Filled.Settings) { currentPage = DashboardPage.HOME }
         }
 
         if (menuOpen) {
-            SideMenu(
+            SideMenu (
                 language = language,
                 brideName = brideName,
                 groomName = groomName,
@@ -109,38 +108,7 @@ fun DashboardHome(
             .background(Color(0xFFFFF7F3))
             .padding(horizontal = 22.dp, vertical = 18.dp)
     ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(
-                imageVector = Icons.Filled.Menu,
-                contentDescription = null,
-                tint = Color(0xFF2F3D40),
-                modifier = Modifier
-                    .size(30.dp)
-                    .clickable { onMenuClick() }
-            )
-
-            Spacer(modifier = Modifier.weight(1f))
-
-            Text(
-                text = "MyWedding",
-                fontSize = 23.sp,
-                fontWeight = FontWeight.ExtraBold,
-                color = Color(0xFFE95D7E),
-                fontFamily = FontFamily.Serif
-            )
-
-            Spacer(modifier = Modifier.weight(1f))
-
-            Icon(
-                imageVector = Icons.Filled.NotificationsNone,
-                contentDescription = null,
-                tint = Color(0xFF8F4F5F),
-                modifier = Modifier.size(26.dp)
-            )
-        }
+        TopDashboardBar(onMenuClick = onMenuClick)
 
         Spacer(modifier = Modifier.height(20.dp))
 
@@ -182,278 +150,164 @@ fun DashboardHome(
                 }
             }
 
-            ProgressCircle(progress = 0.65f)
+            ProgressCircle(progress = 0f)
         }
 
         Spacer(modifier = Modifier.height(18.dp))
 
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(220.dp),
-            shape = RoundedCornerShape(24.dp),
-            colors = CardDefaults.cardColors(containerColor = Color(0xFFFFE1E8))
-        ) {
-            Box(modifier = Modifier.fillMaxSize()) {
-                Image(
-                    painter = painterResource(R.drawable.dashboardd),
-                    contentDescription = null,
-                    modifier = Modifier.fillMaxSize(),
-                    contentScale = ContentScale.Crop
-                )
-
-                Column(
-                    modifier = Modifier
-                        .align(Alignment.CenterStart)
-                        .padding(start = 22.dp)
-                ) {
-                    Text(
-                        text = daysLeft.toString(),
-                        fontSize = 46.sp,
-                        fontWeight = FontWeight.ExtraBold,
-                        color = Color(0xFFE95D7E)
-                    )
-
-                    Text(
-                        text = if (language == AppLanguage.ENGLISH) "days left" else "дена остануваат",
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color(0xFF2F3D40)
-                    )
-
-                    Text(
-                        text = if (language == AppLanguage.ENGLISH) "until your wedding" else "до вашата свадба",
-                        fontSize = 14.sp,
-                        color = Color(0xFF7C6F73)
-                    )
-                }
-            }
-        }
+        CountdownCard(
+            language = language,
+            daysLeft = daysLeft
+        )
 
         Spacer(modifier = Modifier.height(18.dp))
 
         Row(modifier = Modifier.fillMaxWidth()) {
-            DashboardCard(
-                icon = Icons.Filled.Checklist,
-                title = if (language == AppLanguage.ENGLISH) "To-dos" else "Задачи",
-                subtitle = "0 tasks",
-                modifier = Modifier.weight(1f),
-                onClick = { onPageClick(DashboardPage.TODOS) }
-            )
+            DashboardCard(Icons.Filled.Checklist, if (language == AppLanguage.ENGLISH) "To-dos" else "Задачи", "0 tasks", Modifier.weight(1f)) {
+                onPageClick(DashboardPage.TODOS)
+            }
 
             Spacer(modifier = Modifier.width(12.dp))
 
-            DashboardCard(
-                icon = Icons.Filled.Groups,
-                title = if (language == AppLanguage.ENGLISH) "Guests" else "Гости",
-                subtitle = "0 invited",
-                modifier = Modifier.weight(1f),
-                onClick = { onPageClick(DashboardPage.GUESTS) }
-            )
+            DashboardCard(Icons.Filled.Groups, if (language == AppLanguage.ENGLISH) "Guests" else "Гости", "0 invited", Modifier.weight(1f)) {
+                onPageClick(DashboardPage.GUESTS)
+            }
 
             Spacer(modifier = Modifier.width(12.dp))
 
-            DashboardCard(
-                icon = Icons.Filled.AttachMoney,
-                title = if (language == AppLanguage.ENGLISH) "Budget" else "Буџет",
-                subtitle = "0 ден",
-                modifier = Modifier.weight(1f),
-                onClick = { onPageClick(DashboardPage.BUDGET) }
-            )
+            DashboardCard(Icons.Filled.AttachMoney, if (language == AppLanguage.ENGLISH) "Budget" else "Буџет", "0 ден", Modifier.weight(1f)) {
+                onPageClick(DashboardPage.BUDGET)
+            }
         }
 
         Spacer(modifier = Modifier.height(12.dp))
 
         Row(modifier = Modifier.fillMaxWidth()) {
-            DashboardCard(
-                icon = Icons.Filled.Storefront,
-                title = if (language == AppLanguage.ENGLISH) "Vendors" else "Добавувачи",
-                subtitle = "0 booked",
-                modifier = Modifier.weight(1f),
-                onClick = { onPageClick(DashboardPage.VENDORS) }
-            )
+            DashboardCard(Icons.Filled.Storefront, if (language == AppLanguage.ENGLISH) "Restaurants" else "Ресторани", "0 selected", Modifier.weight(1f)) {
+                onPageClick(DashboardPage.RESTAURANTS)
+            }
 
             Spacer(modifier = Modifier.width(12.dp))
 
-            DashboardCard(
-                icon = Icons.Filled.Event,
-                title = if (language == AppLanguage.ENGLISH) "Schedule" else "Распоред",
-                subtitle = "0 events",
-                modifier = Modifier.weight(1f),
-                onClick = { onPageClick(DashboardPage.SCHEDULE) }
-            )
+            DashboardCard(Icons.Filled.EventSeat, if (language == AppLanguage.ENGLISH) "Seating" else "Маси", "0 tables", Modifier.weight(1f)) {
+                onPageClick(DashboardPage.SEATING)
+            }
 
             Spacer(modifier = Modifier.width(12.dp))
 
-            DashboardCard(
-                icon = Icons.Filled.StickyNote2,
-                title = if (language == AppLanguage.ENGLISH) "Notes" else "Белешки",
-                subtitle = "0 notes",
-                modifier = Modifier.weight(1f),
-                onClick = { onPageClick(DashboardPage.NOTES) }
-            )
+            DashboardCard(Icons.Filled.CardGiftcard, if (language == AppLanguage.ENGLISH) "Gifts" else "Подароци", "0 gifts", Modifier.weight(1f)) {
+                onPageClick(DashboardPage.GIFTS)
+            }
+        }
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        Row(modifier = Modifier.fillMaxWidth()) {
+            DashboardCard(Icons.Filled.Event, if (language == AppLanguage.ENGLISH) "Schedule" else "План", "0 events", Modifier.weight(1f)) {
+                onPageClick(DashboardPage.SCHEDULE)
+            }
+
+            Spacer(modifier = Modifier.width(12.dp))
+
+            DashboardCard(Icons.Filled.StickyNote2, if (language == AppLanguage.ENGLISH) "Notes" else "Белешки", "0 notes", Modifier.weight(1f)) {
+                onPageClick(DashboardPage.NOTES)
+            }
+
+            Spacer(modifier = Modifier.width(12.dp))
+
+            DashboardCard(Icons.Filled.PhotoLibrary, if (language == AppLanguage.ENGLISH) "Memories" else "Спомени", "0 photos", Modifier.weight(1f)) {
+                onPageClick(DashboardPage.MEMORIES)
+            }
         }
 
         Spacer(modifier = Modifier.weight(1f))
 
-        BottomNavigationBar(language = language, onPageClick = onPageClick)
+        BottomNavBar(language = language, onPageClick = onPageClick)
     }
 }
 
 @Composable
-fun DashboardCard(
-    icon: ImageVector,
-    title: String,
-    subtitle: String,
-    modifier: Modifier = Modifier,
-    onClick: () -> Unit
-) {
-    Card(
-        modifier = modifier
-            .height(116.dp)
-            .clickable { onClick() },
-        shape = RoundedCornerShape(18.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White)
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(10.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            Icon(
-                imageVector = icon,
-                contentDescription = null,
-                tint = Color(0xFFE95D7E),
-                modifier = Modifier.size(34.dp)
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Text(
-                text = title,
-                fontSize = 13.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color(0xFF2F3D40)
-            )
-
-            Text(
-                text = subtitle,
-                fontSize = 10.sp,
-                color = Color(0xFF8F4F5F)
-            )
-        }
-    }
-}
-
-@Composable
-fun ProgressCircle(progress: Float) {
-    val percent = (progress * 100).toInt()
-
-    Box(
-        modifier = Modifier.size(86.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        Canvas(modifier = Modifier.fillMaxSize()) {
-            drawArc(
-                color = Color(0xFFFFD7DF),
-                startAngle = -90f,
-                sweepAngle = 360f,
-                useCenter = false,
-                style = Stroke(width = 10f, cap = StrokeCap.Round),
-                size = Size(size.width, size.height),
-                topLeft = Offset.Zero
-            )
-
-            drawArc(
-                color = Color(0xFFE95D7E),
-                startAngle = -90f,
-                sweepAngle = 360f * progress,
-                useCenter = false,
-                style = Stroke(width = 10f, cap = StrokeCap.Round),
-                size = Size(size.width, size.height),
-                topLeft = Offset.Zero
-            )
-        }
-
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(
-                text = "$percent%",
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color(0xFF2F3D40)
-            )
-            Text(
-                text = "Completed",
-                fontSize = 9.sp,
-                color = Color(0xFF7C6F73)
-            )
-        }
-    }
-}
-
-@Composable
-fun BottomNavigationBar(
-    language: AppLanguage,
-    onPageClick: (DashboardPage) -> Unit
-) {
-    Card(
+fun TopDashboardBar(onMenuClick: () -> Unit) {
+    Row(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(24.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White)
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 9.dp),
-            horizontalArrangement = Arrangement.SpaceAround
-        ) {
-            BottomNavItem(Icons.Filled.Home, if (language == AppLanguage.ENGLISH) "Home" else "Дома") {
-                onPageClick(DashboardPage.HOME)
-            }
-
-            BottomNavItem(Icons.Filled.Checklist, if (language == AppLanguage.ENGLISH) "To-dos" else "Задачи") {
-                onPageClick(DashboardPage.TODOS)
-            }
-
-            BottomNavItem(Icons.Filled.Groups, if (language == AppLanguage.ENGLISH) "Guests" else "Гости") {
-                onPageClick(DashboardPage.GUESTS)
-            }
-
-            BottomNavItem(Icons.Filled.AttachMoney, if (language == AppLanguage.ENGLISH) "Budget" else "Буџет") {
-                onPageClick(DashboardPage.BUDGET)
-            }
-
-            BottomNavItem(Icons.Filled.MoreHoriz, if (language == AppLanguage.ENGLISH) "More" else "Повеќе") {
-                onPageClick(DashboardPage.NOTES)
-            }
-        }
-    }
-}
-
-@Composable
-fun BottomNavItem(
-    icon: ImageVector,
-    title: String,
-    onClick: () -> Unit
-) {
-    Column(
-        modifier = Modifier.clickable { onClick() },
-        horizontalAlignment = Alignment.CenterHorizontally
+        verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
-            imageVector = icon,
+            imageVector = Icons.Filled.Menu,
             contentDescription = null,
-            tint = Color(0xFF8F4F5F),
-            modifier = Modifier.size(23.dp)
+            tint = Color(0xFF2F3D40),
+            modifier = Modifier
+                .size(30.dp)
+                .clickable { onMenuClick() }
         )
 
+        Spacer(modifier = Modifier.weight(1f))
+
         Text(
-            text = title,
-            fontSize = 9.sp,
-            color = Color(0xFF8F4F5F)
+            text = "MyWedding",
+            fontSize = 23.sp,
+            fontWeight = FontWeight.ExtraBold,
+            color = Color(0xFFE95D7E),
+            fontFamily = FontFamily.Serif
         )
+
+        Spacer(modifier = Modifier.weight(1f))
+
+        Icon(
+            imageVector = Icons.Filled.NotificationsNone,
+            contentDescription = null,
+            tint = Color(0xFF8F4F5F),
+            modifier = Modifier.size(26.dp)
+        )
+    }
+}
+
+@Composable
+fun CountdownCard(
+    language: AppLanguage,
+    daysLeft: Long
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(220.dp),
+        shape = RoundedCornerShape(24.dp),
+        colors = CardDefaults.cardColors(containerColor = Color(0xFFFFE1E8))
+    ) {
+        Box(modifier = Modifier.fillMaxSize()) {
+            Image(
+                painter = painterResource(R.drawable.dashboardd),
+                contentDescription = null,
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.Crop
+            )
+
+            Column(
+                modifier = Modifier
+                    .align(Alignment.CenterStart)
+                    .padding(start = 22.dp)
+            ) {
+                Text(
+                    text = daysLeft.toString(),
+                    fontSize = 46.sp,
+                    fontWeight = FontWeight.ExtraBold,
+                    color = Color(0xFFE95D7E)
+                )
+
+                Text(
+                    text = if (language == AppLanguage.ENGLISH) "days left" else "дена остануваат",
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color(0xFF2F3D40)
+                )
+
+                Text(
+                    text = if (language == AppLanguage.ENGLISH) "until your wedding" else "до вашата свадба",
+                    fontSize = 14.sp,
+                    color = Color(0xFF7C6F73)
+                )
+            }
+        }
     }
 }
 
