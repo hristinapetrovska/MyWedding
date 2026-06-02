@@ -19,6 +19,7 @@ import com.example.mywedding.screens.MyWeddingSplash
 import com.example.mywedding.screens.LanguageScreen
 import com.example.mywedding.screens.WelcomeScreen
 import com.example.mywedding.screens.WeddingSetupScreen
+import com.example.mywedding.screens.DashboardScreen
 
 
 class MainActivity : ComponentActivity() {
@@ -38,6 +39,11 @@ fun MyWeddingApp() {
     var showSplash by remember { mutableStateOf(true) }
     var selectedLanguage by remember { mutableStateOf<AppLanguage?>(null) }
     var showWeddingSetup by remember { mutableStateOf(false) }
+    var showDashboard by remember { mutableStateOf(false) }
+
+    var brideName by remember { mutableStateOf("") }
+    var groomName by remember { mutableStateOf("") }
+    var weddingDate by remember { mutableStateOf("") }
 
     LaunchedEffect(Unit) {
         kotlinx.coroutines.delay(2500)
@@ -66,9 +72,27 @@ fun MyWeddingApp() {
                         selectedLanguage = AppLanguage.MACEDONIAN
                     }
                 )
-            } else {
-                if (showWeddingSetup) {
-                    WeddingSetupScreen(language = selectedLanguage!!)
+            }  else {
+                if (showDashboard) {
+                    DashboardScreen(
+                        language = selectedLanguage!!,
+                        brideName = brideName,
+                        groomName = groomName,
+                        weddingDate = weddingDate
+                    )
+                } else if (showWeddingSetup) {
+                    WeddingSetupScreen(
+                        language = selectedLanguage!!,
+                        onBackClick = {
+                            showWeddingSetup = false
+                        },
+                        onContinueClick = { bride, groom, date ->
+                            brideName = bride
+                            groomName = groom
+                            weddingDate = date
+                            showDashboard = true
+                        }
+                    )
                 } else {
                     WelcomeScreen(
                         language = selectedLanguage!!,
