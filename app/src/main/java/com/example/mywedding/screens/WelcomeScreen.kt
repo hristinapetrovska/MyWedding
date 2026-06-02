@@ -1,15 +1,9 @@
 package com.example.mywedding.screens
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -18,24 +12,12 @@ import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -43,196 +25,123 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mywedding.AppLanguage
 import com.google.firebase.auth.FirebaseAuth
+import androidx.compose.foundation.Image
+import androidx.compose.ui.res.painterResource
+import com.example.mywedding.R
 
 @Composable
 fun WelcomeScreen(
     language: AppLanguage,
     onBackClick: () -> Unit,
-    onGuestLogin: () -> Unit
+    onGuestLogin: () -> Unit,
+    onRegisterClick: () -> Unit,
+    onGoogleLogin: () -> Unit
 ) {
-    val welcomeText =
-        if (language == AppLanguage.ENGLISH) {
-            "Welcome to"
-        } else {
-            "Добредојдовте во"
-        }
+    val auth = FirebaseAuth.getInstance()
 
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
     var loginMessage by remember { mutableStateOf("") }
 
-    val auth = FirebaseAuth.getInstance()
-
-    val subtitleText =
-        if (language == AppLanguage.ENGLISH) {
-            "Login to continue"
-        } else {
-            "Најавете се за да продолжите"
-        }
-
-    val emailText =
-        if (language == AppLanguage.ENGLISH) {
-            "Email"
-        } else {
-            "Е-пошта"
-        }
-
-    val passwordText =
-        if (language == AppLanguage.ENGLISH) {
-            "Password"
-        } else {
-            "Лозинка"
-        }
-
-    val loginText =
-        if (language == AppLanguage.ENGLISH) {
-            "Login"
-        } else {
-            "Најава"
-        }
-
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFFFF7F3)),
+            .background(Color(0xFFFFF7F3))
+            .padding(horizontal = 28.dp),
         contentAlignment = Alignment.Center
     ) {
         IconButton(
             onClick = onBackClick,
             modifier = Modifier
                 .align(Alignment.TopStart)
-                .padding(20.dp)
-                .size(60.dp)
+                .padding(top = 18.dp)
         ) {
             Icon(
                 imageVector = Icons.Filled.ArrowBack,
-                contentDescription = "Back",
-                tint = Color(0xFF8F4F5F),
-                modifier = Modifier.size(34.dp)
+                contentDescription = null,
+                tint = Color(0xFF2F3D40)
             )
         }
+
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 28.dp),
+            modifier = Modifier.fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-
-            Spacer(modifier = Modifier.height(60.dp))
+            Text(
+                text = if (language == AppLanguage.ENGLISH) "Welcome to" else "Добредојдовте во",
+                fontSize = 24.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = Color(0xFF2F3D40)
+            )
 
             Text(
-                text = welcomeText,
-                fontSize = 34.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color(0xFF7D4B57),
+                text = "MyWedding",
+                fontSize = 38.sp,
+                fontWeight = FontWeight.ExtraBold,
+                color = Color(0xFFE95D7E),
                 fontFamily = FontFamily.Serif
             )
 
             Spacer(modifier = Modifier.height(10.dp))
 
             Text(
-                text = "MyWedding",
-                fontSize = 42.sp,
-                fontWeight = FontWeight.ExtraBold,
-                color = Color(0xFFE95D7E),
-                fontFamily = FontFamily.Serif
-            )
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            Text(
-                text = subtitleText,
-                color = Color(0xFF9A7B83),
+                text = if (language == AppLanguage.ENGLISH) "Login to continue" else "Најавете се за да продолжите",
                 fontSize = 15.sp,
-                fontStyle = FontStyle.Italic
+                color = Color(0xFF5F4B51)
             )
 
-            Spacer(modifier = Modifier.height(36.dp))
+            Spacer(modifier = Modifier.height(34.dp))
 
             TextField(
                 value = email,
-                onValueChange = {
-                    email = it
-                },
+                onValueChange = { email = it },
                 leadingIcon = {
-                    Icon(
-                        imageVector = Icons.Filled.Email,
-                        contentDescription =
-                            if (language == AppLanguage.ENGLISH)
-                                "Email"
-                            else
-                                "Е-пошта",
-                        tint = Color(0xFFE95D7E)
-                    )
+                    Icon(Icons.Filled.Email, contentDescription = null, tint = Color(0xFF9A9A9A))
                 },
                 placeholder = {
                     Text(
-                        text = emailText,
-                        fontWeight = FontWeight.Bold
+                        text = if (language == AppLanguage.ENGLISH) "Email" else "Е-пошта",
+                        color = Color(0xFF9A9A9A)
                     )
                 },
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(18.dp),
+                shape = RoundedCornerShape(14.dp),
                 colors = TextFieldDefaults.colors(
                     focusedContainerColor = Color.White,
                     unfocusedContainerColor = Color.White,
                     focusedIndicatorColor = Color.Transparent,
                     unfocusedIndicatorColor = Color.Transparent
-                ),
+                )
             )
 
-            Spacer(modifier = Modifier.height(18.dp))
+            Spacer(modifier = Modifier.height(14.dp))
 
             TextField(
                 value = password,
-                onValueChange = {
-                    password = it
-                },
+                onValueChange = { password = it },
                 leadingIcon = {
-                    Icon(
-                        imageVector = Icons.Filled.Lock,
-                        contentDescription =
-                            if (language == AppLanguage.ENGLISH)
-                                "Password"
-                            else
-                                "Лозинка",
-                        tint = Color(0xFFE95D7E)
-                    )
+                    Icon(Icons.Filled.Lock, contentDescription = null, tint = Color(0xFF9A9A9A))
                 },
                 trailingIcon = {
-                    IconButton(
-                        onClick = {
-                            passwordVisible = !passwordVisible
-                        }
-                    ) {
+                    IconButton(onClick = { passwordVisible = !passwordVisible }) {
                         Icon(
-                            imageVector = if (passwordVisible)
-                                Icons.Filled.Visibility
-                            else
-                                Icons.Filled.VisibilityOff,
-                            contentDescription =
-                                if (language == AppLanguage.ENGLISH)
-                                    "Show password"
-                                else
-                                    "Прикажи лозинка",
-                            tint = Color(0xFF8F4F5F)
+                            imageVector = if (passwordVisible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff,
+                            contentDescription = null,
+                            tint = Color(0xFF9A9A9A)
                         )
                     }
                 },
                 visualTransformation =
-                    if (passwordVisible)
-                        VisualTransformation.None
-                    else
-                        PasswordVisualTransformation(),
+                    if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                 placeholder = {
                     Text(
-                        text = passwordText,
-                        fontWeight = FontWeight.Bold
+                        text = if (language == AppLanguage.ENGLISH) "Password" else "Лозинка",
+                        color = Color(0xFF9A9A9A)
                     )
                 },
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(18.dp),
+                shape = RoundedCornerShape(14.dp),
                 colors = TextFieldDefaults.colors(
                     focusedContainerColor = Color.White,
                     unfocusedContainerColor = Color.White,
@@ -241,37 +150,27 @@ fun WelcomeScreen(
                 )
             )
 
-            Spacer(modifier = Modifier.height(14.dp))
+            Spacer(modifier = Modifier.height(10.dp))
 
             TextButton(
                 onClick = { },
                 modifier = Modifier.align(Alignment.End)
-            )
-            {
+            ) {
                 Text(
-                    fontSize = 13.sp,
-                    text =
-                        if (language == AppLanguage.ENGLISH)
-                            "Forgot Password?"
-                        else
-                            "Ја заборавивте лозинката?",
-                    color = Color(0xFFE95D7E)
+                    text = if (language == AppLanguage.ENGLISH) "Forgot password?" else "Ја заборавивте лозинката?",
+                    color = Color(0xFFE95D7E),
+                    fontSize = 13.sp
                 )
             }
 
-            Spacer(modifier = Modifier.height(14.dp))
+            Spacer(modifier = Modifier.height(8.dp))
 
             Button(
                 onClick = {
                     auth.signInWithEmailAndPassword(email, password)
                         .addOnCompleteListener { task ->
-
                             if (task.isSuccessful) {
-                                loginMessage =
-                                    if (language == AppLanguage.ENGLISH)
-                                        "Login successful"
-                                    else
-                                        "Успешна најава"
+                                onGuestLogin()
                             } else {
                                 loginMessage =
                                     if (language == AppLanguage.ENGLISH)
@@ -283,85 +182,174 @@ fun WelcomeScreen(
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(60.dp),
-                shape = RoundedCornerShape(22.dp),
+                    .height(56.dp),
+                shape = RoundedCornerShape(14.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color(0xFFE95D7E)
                 )
-            )
-            {
+            ) {
                 Text(
-                    text = loginText,
-                    fontSize = 18.sp
+                    text = if (language == AppLanguage.ENGLISH) "Login" else "Најава",
+                    fontSize = 17.sp,
+                    fontWeight = FontWeight.Bold
                 )
             }
 
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
-            if (loginMessage.isNotEmpty()) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(
-                            color = Color(0xFFFFE1E8),
-                            shape = RoundedCornerShape(16.dp)
-                        )
-                        .padding(14.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = loginMessage,
-                        color = Color(0xFFB00020),
-                        fontSize = 15.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Divider(modifier = Modifier.weight(1f), color = Color(0xFFE4DADD))
 
-                Spacer(modifier = Modifier.height(12.dp))
+                Text(
+                    text = if (language == AppLanguage.ENGLISH) "  Or continue with  " else "  Или продолжи со  ",
+                    fontSize = 13.sp,
+                    color = Color(0xFF7C6F73)
+                )
+
+                Divider(modifier = Modifier.weight(1f), color = Color(0xFFE4DADD))
             }
+
+            Spacer(modifier = Modifier.height(14.dp))
+
+            Row(modifier = Modifier.fillMaxWidth()) {
+                SocialButton(
+                    text = "Google",
+                    modifier = Modifier.weight(1f),
+                    onClick = {
+                        onGoogleLogin()
+                    }
+                )
+
+                Spacer(modifier = Modifier.width(12.dp))
+
+                SocialButton(
+                    text = "Facebook",
+                    modifier = Modifier.weight(1f),
+                    onClick = {
+                        loginMessage =
+                            if (language == AppLanguage.ENGLISH)
+                                "Facebook login will be added next"
+                            else
+                                "Facebook најава ќе ја додадеме следно"
+                    }
+                )
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
 
             Button(
                 onClick = {
                     auth.signInAnonymously()
                         .addOnCompleteListener { task ->
-
                             if (task.isSuccessful) {
                                 onGuestLogin()
-
+                            } else {
+                                loginMessage =
+                                    if (language == AppLanguage.ENGLISH)
+                                        "Guest login failed"
+                                    else
+                                        "Најава како гостин не успеа"
                             }
                         }
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(56.dp),
-                shape = RoundedCornerShape(18.dp),
+                    .height(54.dp),
+                shape = RoundedCornerShape(14.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color.White,
-                    contentColor = Color(0xFF8F4F5F)
+                    contentColor = Color(0xFF2F3D40)
                 )
             ) {
                 Icon(
                     imageVector = Icons.Filled.Person,
-                    contentDescription =
-                        if (language == AppLanguage.ENGLISH)
-                            "Guest"
-                        else
-                            "Гостин",
-                    tint = Color(0xFFE95D7E)
+                    contentDescription = null,
+                    tint = Color(0xFF2F3D40)
                 )
 
                 Spacer(modifier = Modifier.width(10.dp))
 
                 Text(
-                    text =
-                        if (language == AppLanguage.ENGLISH)
-                            "Continue as Guest"
-                        else
-                            "Продолжи како гостин",
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold
+                    text = if (language == AppLanguage.ENGLISH) "Continue as Guest" else "Продолжи како гостин",
+                    fontSize = 15.sp,
+                    fontWeight = FontWeight.SemiBold
+                )
+            }
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = if (language == AppLanguage.ENGLISH)
+                        "Don’t have an account?"
+                    else
+                        "Немате профил?",
+                    fontSize = 14.sp,
+                    color = Color(0xFF5F4B51)
+                )
+
+                Spacer(modifier = Modifier.width(4.dp))
+
+                Text(
+                    text = if (language == AppLanguage.ENGLISH) "Sign up" else "Регистрирај се",
+                    fontSize = 14.sp,
+                    color = Color(0xFFE95D7E),
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.clickable { onRegisterClick() }
+                )
+            }
+
+            if (loginMessage.isNotEmpty()) {
+                Spacer(modifier = Modifier.height(14.dp))
+
+                Text(
+                    text = loginMessage,
+                    color = Color(0xFFB00020),
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.SemiBold
                 )
             }
         }
+    }
+}
+
+@Composable
+fun SocialButton(
+    text: String,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit
+) {
+    Row(
+        modifier = modifier
+            .height(52.dp)
+            .background(Color.White, RoundedCornerShape(14.dp))
+            .border(1.dp, Color(0xFFE4DADD), RoundedCornerShape(14.dp))
+            .clickable { onClick() }
+            .padding(horizontal = 14.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center
+    ) {
+        Image(
+            painter = painterResource(
+                id = if (text == "Google")
+                    R.drawable.googlelogo
+                else
+                    R.drawable.fblogo
+            ),
+            contentDescription = null,
+            modifier = Modifier.size(22.dp)
+        )
+
+        Spacer(modifier = Modifier.width(10.dp))
+
+        Text(
+            text = text,
+            fontSize = 14.sp,
+            color = Color(0xFF2F3D40),
+            fontWeight = FontWeight.SemiBold
+        )
     }
 }

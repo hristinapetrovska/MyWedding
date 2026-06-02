@@ -63,7 +63,12 @@ fun DashboardScreen(
                 onPageClick = { currentPage = it }
             )
 
-            DashboardPage.TODOS -> SimplePage("To-dos", Icons.Filled.Checklist) { currentPage = DashboardPage.HOME }
+            DashboardPage.TODOS -> TodoScreen(
+                language = language,
+                onBackClick = {
+                    currentPage = DashboardPage.HOME
+                }
+            )
             DashboardPage.GUESTS -> SimplePage("Guests", Icons.Filled.Groups) { currentPage = DashboardPage.HOME }
             DashboardPage.BUDGET -> SimplePage("Budget", Icons.Filled.AttachMoney) { currentPage = DashboardPage.HOME }
             DashboardPage.RESTAURANTS -> SimplePage("Restaurants", Icons.Filled.Storefront) { currentPage = DashboardPage.HOME }
@@ -88,6 +93,18 @@ fun DashboardScreen(
                 }
             )
         }
+
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(start = 22.dp, end = 22.dp, bottom = 18.dp),
+            contentAlignment = Alignment.BottomCenter
+        ) {
+            BottomNavBar(
+                language = language,
+                onPageClick = { currentPage = it }
+            )
+        }
     }
 }
 
@@ -101,6 +118,16 @@ fun DashboardHome(
     onPageClick: (DashboardPage) -> Unit
 ) {
     val daysLeft = calculateDaysLeft(weddingDate)
+
+    val totalTasks = defaultWeddingTasks().size
+    val guestsCount = 0
+    val budgetAmount = 0
+    val selectedRestaurants = 0
+    val tablesCount = 0
+    val giftsCount = 0
+    val eventsCount = 0
+    val notesCount = 0
+    val memoriesCount = 0
 
     Column(
         modifier = Modifier
@@ -163,19 +190,34 @@ fun DashboardHome(
         Spacer(modifier = Modifier.height(18.dp))
 
         Row(modifier = Modifier.fillMaxWidth()) {
-            DashboardCard(Icons.Filled.Checklist, if (language == AppLanguage.ENGLISH) "To-dos" else "Задачи", "0 tasks", Modifier.weight(1f)) {
+            DashboardCard(
+                Icons.Filled.Checklist,
+                if (language == AppLanguage.ENGLISH) "To-dos" else "Задачи",
+                if (language == AppLanguage.ENGLISH) "$totalTasks tasks" else "$totalTasks задачи",
+                Modifier.weight(1f)
+            ) {
                 onPageClick(DashboardPage.TODOS)
             }
 
             Spacer(modifier = Modifier.width(12.dp))
 
-            DashboardCard(Icons.Filled.Groups, if (language == AppLanguage.ENGLISH) "Guests" else "Гости", "0 invited", Modifier.weight(1f)) {
+            DashboardCard(
+                Icons.Filled.Groups,
+                if (language == AppLanguage.ENGLISH) "Guests" else "Гости",
+                if (language == AppLanguage.ENGLISH) "$guestsCount invited" else "$guestsCount гости",
+                Modifier.weight(1f)
+            ) {
                 onPageClick(DashboardPage.GUESTS)
             }
 
             Spacer(modifier = Modifier.width(12.dp))
 
-            DashboardCard(Icons.Filled.AttachMoney, if (language == AppLanguage.ENGLISH) "Budget" else "Буџет", "0 ден", Modifier.weight(1f)) {
+            DashboardCard(
+                Icons.Filled.AttachMoney,
+                if (language == AppLanguage.ENGLISH) "Budget" else "Буџет",
+                "$budgetAmount ден",
+                Modifier.weight(1f)
+            ) {
                 onPageClick(DashboardPage.BUDGET)
             }
         }
@@ -183,19 +225,34 @@ fun DashboardHome(
         Spacer(modifier = Modifier.height(12.dp))
 
         Row(modifier = Modifier.fillMaxWidth()) {
-            DashboardCard(Icons.Filled.Storefront, if (language == AppLanguage.ENGLISH) "Restaurants" else "Ресторани", "0 selected", Modifier.weight(1f)) {
+            DashboardCard(
+                Icons.Filled.Storefront,
+                if (language == AppLanguage.ENGLISH) "Restaurants" else "Ресторани",
+                if (language == AppLanguage.ENGLISH) "$selectedRestaurants selected" else "$selectedRestaurants избрани",
+                Modifier.weight(1f)
+            ) {
                 onPageClick(DashboardPage.RESTAURANTS)
             }
 
             Spacer(modifier = Modifier.width(12.dp))
 
-            DashboardCard(Icons.Filled.EventSeat, if (language == AppLanguage.ENGLISH) "Seating" else "Маси", "0 tables", Modifier.weight(1f)) {
+            DashboardCard(
+                Icons.Filled.EventSeat,
+                if (language == AppLanguage.ENGLISH) "Seating" else "Маси",
+                if (language == AppLanguage.ENGLISH) "$tablesCount tables" else "$tablesCount маси",
+                Modifier.weight(1f)
+            ) {
                 onPageClick(DashboardPage.SEATING)
             }
 
             Spacer(modifier = Modifier.width(12.dp))
 
-            DashboardCard(Icons.Filled.CardGiftcard, if (language == AppLanguage.ENGLISH) "Gifts" else "Подароци", "0 gifts", Modifier.weight(1f)) {
+            DashboardCard(
+                Icons.Filled.CardGiftcard,
+                if (language == AppLanguage.ENGLISH) "Gifts" else "Подароци",
+                if (language == AppLanguage.ENGLISH) "$giftsCount gifts" else "$giftsCount подароци",
+                Modifier.weight(1f)
+            ) {
                 onPageClick(DashboardPage.GIFTS)
             }
         }
@@ -203,26 +260,39 @@ fun DashboardHome(
         Spacer(modifier = Modifier.height(12.dp))
 
         Row(modifier = Modifier.fillMaxWidth()) {
-            DashboardCard(Icons.Filled.Event, if (language == AppLanguage.ENGLISH) "Schedule" else "План", "0 events", Modifier.weight(1f)) {
+            DashboardCard(
+                Icons.Filled.Event,
+                if (language == AppLanguage.ENGLISH) "Schedule" else "План",
+                if (language == AppLanguage.ENGLISH) "$eventsCount events" else "$eventsCount настани",
+                Modifier.weight(1f)
+            ) {
                 onPageClick(DashboardPage.SCHEDULE)
             }
 
             Spacer(modifier = Modifier.width(12.dp))
 
-            DashboardCard(Icons.Filled.StickyNote2, if (language == AppLanguage.ENGLISH) "Notes" else "Белешки", "0 notes", Modifier.weight(1f)) {
+            DashboardCard(
+                Icons.Filled.StickyNote2,
+                if (language == AppLanguage.ENGLISH) "Notes" else "Белешки",
+                if (language == AppLanguage.ENGLISH) "$notesCount notes" else "$notesCount белешки",
+                Modifier.weight(1f)
+            ) {
                 onPageClick(DashboardPage.NOTES)
             }
 
             Spacer(modifier = Modifier.width(12.dp))
 
-            DashboardCard(Icons.Filled.PhotoLibrary, if (language == AppLanguage.ENGLISH) "Memories" else "Спомени", "0 photos", Modifier.weight(1f)) {
+            DashboardCard(
+                Icons.Filled.PhotoLibrary,
+                if (language == AppLanguage.ENGLISH) "Memories" else "Спомени",
+                if (language == AppLanguage.ENGLISH) "$memoriesCount photos" else "$memoriesCount слики",
+                Modifier.weight(1f)
+            ) {
                 onPageClick(DashboardPage.MEMORIES)
             }
         }
 
         Spacer(modifier = Modifier.weight(1f))
-
-        BottomNavBar(language = language, onPageClick = onPageClick)
     }
 }
 

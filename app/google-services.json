@@ -12,7 +12,20 @@
           "package_name": "com.example.mywedding"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "905672840963-c663j5o42tr90pd6ignsala7imql69vf.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.mywedding",
+            "certificate_hash": "b9b79fae5bed0ebb2d572896fe74b51e81afdfab"
+          }
+        },
+        {
+          "client_id": "905672840963-d9v6lrq1q1eroquq7mq617s78udft6q2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyAeofZrdsWUKBX3pWvBWBIysqyJxg6hn5U"
@@ -20,7 +33,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "905672840963-d9v6lrq1q1eroquq7mq617s78udft6q2.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }
