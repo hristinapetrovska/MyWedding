@@ -80,7 +80,14 @@ fun DashboardScreen(
                     }
                 )
             }
-            DashboardPage.BUDGET -> SimplePage("Budget", Icons.Filled.AttachMoney) { currentPage = DashboardPage.HOME }
+            DashboardPage.BUDGET -> {
+                BudgetScreen(
+                    language = language,
+                    onBackClick = {
+                        currentPage = DashboardPage.HOME
+                    }
+                )
+            }
             DashboardPage.RESTAURANTS -> SimplePage("Restaurants", Icons.Filled.Storefront) { currentPage = DashboardPage.HOME }
             DashboardPage.SEATING -> SimplePage("Seating Plan", Icons.Filled.EventSeat) { currentPage = DashboardPage.HOME }
             DashboardPage.GIFTS -> SimplePage("Gift Registry", Icons.Filled.CardGiftcard) { currentPage = DashboardPage.HOME }
@@ -137,13 +144,14 @@ fun DashboardHome(
     val completedTasks = tasks.count { it.status == TaskStatus.DONE.name }
 
     val guestDao = remember { DatabaseProvider.getDatabase(context).guestDao() }
-
     val guests by guestDao.getAllGuests(userId)
         .collectAsState(initial = emptyList())
-
     val guestsCount = guests.size
 
-    val budgetAmount = 0
+    val budgetDao = remember { DatabaseProvider.getDatabase(context).budgetDao() }
+    val budgetItems by budgetDao.getAllBudgetItems(userId).collectAsState(initial = emptyList())
+    val budgetAmount = budgetItems.sumOf { it.amount }.toInt()
+
     val selectedRestaurants = 0
     val tablesCount = 0
     val giftsCount = 0
@@ -244,7 +252,7 @@ fun DashboardHome(
             DashboardCard(
                 Icons.Filled.AttachMoney,
                 if (language == AppLanguage.ENGLISH) "Budget" else "Буџет",
-                "$budgetAmount $",
+                "$budgetAmount MKD",
                 Modifier.weight(1f)
             ) {
                 onPageClick(DashboardPage.BUDGET)
