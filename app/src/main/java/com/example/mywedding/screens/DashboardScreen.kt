@@ -72,7 +72,14 @@ fun DashboardScreen(
                     currentPage = DashboardPage.HOME
                 }
             )
-            DashboardPage.GUESTS -> SimplePage("Guests", Icons.Filled.Groups) { currentPage = DashboardPage.HOME }
+            DashboardPage.GUESTS -> {
+                GuestsScreen(
+                    language = language,
+                    onBackClick = {
+                        currentPage = DashboardPage.HOME
+                    }
+                )
+            }
             DashboardPage.BUDGET -> SimplePage("Budget", Icons.Filled.AttachMoney) { currentPage = DashboardPage.HOME }
             DashboardPage.RESTAURANTS -> SimplePage("Restaurants", Icons.Filled.Storefront) { currentPage = DashboardPage.HOME }
             DashboardPage.SEATING -> SimplePage("Seating Plan", Icons.Filled.EventSeat) { currentPage = DashboardPage.HOME }
@@ -129,7 +136,13 @@ fun DashboardHome(
     val totalTasks = tasks.size
     val completedTasks = tasks.count { it.status == TaskStatus.DONE.name }
 
-    val guestsCount = 0
+    val guestDao = remember { DatabaseProvider.getDatabase(context).guestDao() }
+
+    val guests by guestDao.getAllGuests(userId)
+        .collectAsState(initial = emptyList())
+
+    val guestsCount = guests.size
+
     val budgetAmount = 0
     val selectedRestaurants = 0
     val tablesCount = 0
@@ -186,7 +199,11 @@ fun DashboardHome(
                 }
             }
 
-            ProgressCircle(progress = 0f)
+            val taskProgress =
+                if (totalTasks == 0) 0f
+                else completedTasks.toFloat() / totalTasks.toFloat()
+
+            ProgressCircle(progress = taskProgress)
         }
 
         Spacer(modifier = Modifier.height(18.dp))
@@ -378,14 +395,14 @@ fun CountdownCard(
 
                 Text(
                     text = if (language == AppLanguage.ENGLISH) "days left" else "дена остануваат",
-                    fontSize = 18.sp,
+                    fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color(0xFF2F3D40)
                 )
 
                 Text(
-                    text = if (language == AppLanguage.ENGLISH) "until your wedding" else "до вашата свадба",
-                    fontSize = 14.sp,
+                    text = if (language == AppLanguage.ENGLISH) "until your wedding" else "до Вашата свадба",
+                    fontSize = 16.sp,
                     color = Color(0xFF7C6F73)
                 )
             }
