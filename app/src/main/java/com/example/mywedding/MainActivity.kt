@@ -18,6 +18,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.firestore.FirebaseFirestore
 
 enum class AppScreen {
     WELCOME,
@@ -29,10 +30,7 @@ enum class AppScreen {
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        setContent {
-            MyWeddingApp()
-        }
+        setContent { MyWeddingApp() }
     }
 }
 
@@ -41,6 +39,7 @@ class MainActivity : ComponentActivity() {
 fun MyWeddingApp() {
     val context = LocalContext.current
     val auth = FirebaseAuth.getInstance()
+    val firestore = FirebaseFirestore.getInstance()
 
     var showSplash by remember { mutableStateOf(true) }
     var selectedLanguage by remember { mutableStateOf<AppLanguage?>(null) }
@@ -49,6 +48,52 @@ fun MyWeddingApp() {
     var brideName by remember { mutableStateOf("") }
     var groomName by remember { mutableStateOf("") }
     var weddingDate by remember { mutableStateOf("") }
+
+    fun checkWeddingData() {
+        val uid = auth.currentUser?.uid ?: return
+
+        firestore.collection("users")
+            .document(uid)
+            .get()
+            .addOnSuccessListener { document ->
+                if (document.exists()) {
+                    brideName = document.getString("brideName") ?: ""
+                    groomName = document.getString("groomName") ?: ""
+                    weddingDate = document.getString("weddingDate") ?: ""
+
+                    if (brideName.isNotBlank() && groomName.isNotBlank() && weddingDate.isNotBlank()) {
+                        currentScreen = AppScreen.DASHBOARD
+                    } else {
+                        currentScreen = AppScreen.WEDDING_SETUP
+                    }
+                } else {
+                    currentScreen = AppScreen.WEDDING_SETUP
+                }
+            }
+            .addOnFailureListener {
+                currentScreen = AppScreen.WEDDING_SETUP
+            }
+    }
+
+    fun saveWeddingData(bride: String, groom: String, date: String) {
+        val uid = auth.currentUser?.uid ?: return
+
+        val data = hashMapOf(
+            "brideName" to bride,
+            "groomName" to groom,
+            "weddingDate" to date
+        )
+
+        firestore.collection("users")
+            .document(uid)
+            .set(data)
+            .addOnSuccessListener {
+                brideName = bride
+                groomName = groom
+                weddingDate = date
+                currentScreen = AppScreen.DASHBOARD
+            }
+    }
 
     val googleLauncher =
         rememberLauncherForActivityResult(
@@ -63,7 +108,7 @@ fun MyWeddingApp() {
                 auth.signInWithCredential(credential)
                     .addOnCompleteListener { firebaseTask ->
                         if (firebaseTask.isSuccessful) {
-                            currentScreen = AppScreen.WEDDING_SETUP
+                            checkWeddingData()
                         }
                     }
             } catch (e: Exception) {
@@ -101,57 +146,35 @@ fun MyWeddingApp() {
         } else {
             if (selectedLanguage == null) {
                 LanguageScreen(
-                    onEnglishClick = {
-                        selectedLanguage = AppLanguage.ENGLISH
-                    },
-                    onMacedonianClick = {
-                        selectedLanguage = AppLanguage.MACEDONIAN
-                    }
+                    onEnglishClick = { selectedLanguage = AppLanguage.ENGLISH },
+                    onMacedonianClick = { selectedLanguage = AppLanguage.MACEDONIAN }
                 )
             } else {
                 when (currentScreen) {
-
                     AppScreen.WELCOME -> {
                         WelcomeScreen(
                             language = selectedLanguage!!,
-                            onBackClick = {
-                                selectedLanguage = null
-                            },
-                            onGuestLogin = {
-                                currentScreen = AppScreen.WEDDING_SETUP
-                            },
-                            onRegisterClick = {
-                                currentScreen = AppScreen.REGISTER
-                            },
-                            onGoogleLogin = {
-                                startGoogleLogin()
-                            }
+                            onBackClick = { selectedLanguage = null },
+                            onGuestLogin = { checkWeddingData() },
+                            onRegisterClick = { currentScreen = AppScreen.REGISTER },
+                            onGoogleLogin = { startGoogleLogin() }
                         )
                     }
 
                     AppScreen.REGISTER -> {
                         RegisterScreen(
                             language = selectedLanguage!!,
-                            onBackClick = {
-                                currentScreen = AppScreen.WELCOME
-                            },
-                            onRegisterSuccess = {
-                                currentScreen = AppScreen.WEDDING_SETUP
-                            }
+                            onBackClick = { currentScreen = AppScreen.WELCOME },
+                            onRegisterSuccess = { checkWeddingData() }
                         )
                     }
 
                     AppScreen.WEDDING_SETUP -> {
                         WeddingSetupScreen(
                             language = selectedLanguage!!,
-                            onBackClick = {
-                                currentScreen = AppScreen.WELCOME
-                            },
+                            onBackClick = { currentScreen = AppScreen.WELCOME },
                             onContinueClick = { bride, groom, date ->
-                                brideName = bride
-                                groomName = groom
-                                weddingDate = date
-                                currentScreen = AppScreen.DASHBOARD
+                                saveWeddingData(bride, groom, date)
                             }
                         )
                     }

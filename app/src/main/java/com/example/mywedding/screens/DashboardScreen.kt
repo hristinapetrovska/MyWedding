@@ -37,6 +37,9 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import java.util.concurrent.TimeUnit
+import androidx.compose.ui.platform.LocalContext
+import com.example.mywedding.data.DatabaseProvider
+import com.google.firebase.auth.FirebaseAuth
 
 enum class DashboardPage {
     HOME, TODOS, GUESTS, BUDGET, RESTAURANTS, SEATING, GIFTS, SCHEDULE, NOTES, MEMORIES, SETTINGS
@@ -118,8 +121,14 @@ fun DashboardHome(
     onPageClick: (DashboardPage) -> Unit
 ) {
     val daysLeft = calculateDaysLeft(weddingDate)
+    val context = LocalContext.current
+    val taskDao = remember { DatabaseProvider.getDatabase(context).taskDao() }
+    val userId = FirebaseAuth.getInstance().currentUser?.uid ?: "guest"
 
-    val totalTasks = defaultWeddingTasks().size
+    val tasks by taskDao.getAllTasks(userId).collectAsState(initial = emptyList())
+    val totalTasks = tasks.size
+    val completedTasks = tasks.count { it.status == TaskStatus.DONE.name }
+
     val guestsCount = 0
     val budgetAmount = 0
     val selectedRestaurants = 0
@@ -193,7 +202,10 @@ fun DashboardHome(
             DashboardCard(
                 Icons.Filled.Checklist,
                 if (language == AppLanguage.ENGLISH) "To-dos" else "Задачи",
-                if (language == AppLanguage.ENGLISH) "$totalTasks tasks" else "$totalTasks задачи",
+                if (language == AppLanguage.ENGLISH)
+                    "$completedTasks done"
+                else
+                    "$completedTasks завршени",
                 Modifier.weight(1f)
             ) {
                 onPageClick(DashboardPage.TODOS)
@@ -204,7 +216,7 @@ fun DashboardHome(
             DashboardCard(
                 Icons.Filled.Groups,
                 if (language == AppLanguage.ENGLISH) "Guests" else "Гости",
-                if (language == AppLanguage.ENGLISH) "$guestsCount invited" else "$guestsCount гости",
+                if (language == AppLanguage.ENGLISH) "$guestsCount invited" else "$guestsCount поканети",
                 Modifier.weight(1f)
             ) {
                 onPageClick(DashboardPage.GUESTS)
@@ -215,7 +227,7 @@ fun DashboardHome(
             DashboardCard(
                 Icons.Filled.AttachMoney,
                 if (language == AppLanguage.ENGLISH) "Budget" else "Буџет",
-                "$budgetAmount ден",
+                "$budgetAmount $",
                 Modifier.weight(1f)
             ) {
                 onPageClick(DashboardPage.BUDGET)
