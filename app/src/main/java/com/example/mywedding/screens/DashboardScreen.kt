@@ -88,8 +88,22 @@ fun DashboardScreen(
                     }
                 )
             }
-            DashboardPage.RESTAURANTS -> SimplePage("Restaurants", Icons.Filled.Storefront) { currentPage = DashboardPage.HOME }
-            DashboardPage.SEATING -> SimplePage("Seating Plan", Icons.Filled.EventSeat) { currentPage = DashboardPage.HOME }
+            DashboardPage.RESTAURANTS -> {
+                RestaurantsScreen(
+                    language = language,
+                    onBackClick = {
+                        currentPage = DashboardPage.HOME
+                    }
+                )
+            }
+            DashboardPage.SEATING -> {
+                SeatingScreen(
+                    language = language,
+                    onBackClick = {
+                        currentPage = DashboardPage.HOME
+                    }
+                )
+            }
             DashboardPage.GIFTS -> SimplePage("Gift Registry", Icons.Filled.CardGiftcard) { currentPage = DashboardPage.HOME }
             DashboardPage.SCHEDULE -> SimplePage("Schedule", Icons.Filled.Event) { currentPage = DashboardPage.HOME }
             DashboardPage.NOTES -> SimplePage("Notes", Icons.Filled.StickyNote2) { currentPage = DashboardPage.HOME }
@@ -177,14 +191,14 @@ fun DashboardHome(
                 Text(
                     text = if (language == AppLanguage.ENGLISH) "Hello," else "Здраво,",
                     fontSize = 22.sp,
-                    fontWeight = FontWeight.Bold,
                     color = Color(0xFF2F3D40)
                 )
 
                 Text(
                     text = "$brideName & $groomName",
-                    fontSize = 18.sp,
-                    color = Color(0xFF5F4B51)
+                    fontSize = 26.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color(0xFF2F3D40)
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))
@@ -265,7 +279,7 @@ fun DashboardHome(
             DashboardCard(
                 Icons.Filled.Storefront,
                 if (language == AppLanguage.ENGLISH) "Restaurants" else "Ресторани",
-                if (language == AppLanguage.ENGLISH) "$selectedRestaurants selected" else "$selectedRestaurants избрани",
+                if (language == AppLanguage.ENGLISH) "GPS search" else "GPS пребарување",
                 Modifier.weight(1f)
             ) {
                 onPageClick(DashboardPage.RESTAURANTS)
@@ -396,7 +410,7 @@ fun CountdownCard(
             ) {
                 Text(
                     text = daysLeft.toString(),
-                    fontSize = 46.sp,
+                    fontSize = 52.sp,
                     fontWeight = FontWeight.ExtraBold,
                     color = Color(0xFFE95D7E)
                 )

@@ -7,9 +7,11 @@ import androidx.room.RoomDatabase
     entities = [
         TaskEntity::class,
         GuestEntity::class,
-        BudgetEntity::class
+        BudgetEntity::class,
+        RestaurantEntity::class,
+        TableEntity::class
     ],
-    version = 7,
+    version = 10,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -17,4 +19,8 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun guestDao(): GuestDao
 
     abstract fun budgetDao(): BudgetDao
+
+    abstract fun restaurantDao(): RestaurantDao
+
+    abstract fun tableDao(): TableDao
 }

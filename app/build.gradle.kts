@@ -61,10 +61,14 @@ dependencies {
     implementation("com.google.firebase:firebase-analytics")
 
     implementation("com.google.android.gms:play-services-auth:21.2.0")
+    implementation("com.google.android.gms:play-services-location:21.3.0")
     implementation("com.facebook.android:facebook-login:17.0.2")
+
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
 
     implementation("androidx.compose.material:material-icons-extended")
 
     implementation("androidx.room:room-runtime:2.6.1")
     implementation("androidx.room:room-ktx:2.6.1")
     ksp("androidx.room:room-compiler:2.6.1")}
+
