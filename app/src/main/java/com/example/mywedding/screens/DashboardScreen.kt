@@ -166,8 +166,11 @@ fun DashboardHome(
     val budgetItems by budgetDao.getAllBudgetItems(userId).collectAsState(initial = emptyList())
     val budgetAmount = budgetItems.sumOf { it.amount }.toInt()
 
+    val tableDao = remember { DatabaseProvider.getDatabase(context).tableDao() }
+    val tables by tableDao.getAllTables(userId).collectAsState(initial = emptyList())
+    val tablesCount = tables.size
+
     val selectedRestaurants = 0
-    val tablesCount = 0
     val giftsCount = 0
     val eventsCount = 0
     val notesCount = 0
