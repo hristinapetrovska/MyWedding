@@ -107,8 +107,14 @@ fun DashboardScreen(
             DashboardPage.GIFTS -> SimplePage("Gift Registry", Icons.Filled.CardGiftcard) { currentPage = DashboardPage.HOME }
             DashboardPage.SCHEDULE -> SimplePage("Schedule", Icons.Filled.Event) { currentPage = DashboardPage.HOME }
             DashboardPage.NOTES -> SimplePage("Notes", Icons.Filled.StickyNote2) { currentPage = DashboardPage.HOME }
-            DashboardPage.MEMORIES -> SimplePage("Memories", Icons.Filled.PhotoLibrary) { currentPage = DashboardPage.HOME }
-            DashboardPage.SETTINGS -> SimplePage("Settings", Icons.Filled.Settings) { currentPage = DashboardPage.HOME }
+            DashboardPage.MEMORIES -> {
+                MemoriesScreen(
+                    language = language,
+                    onBackClick = {
+                        currentPage = DashboardPage.HOME
+                    }
+                )
+            }            DashboardPage.SETTINGS -> SimplePage("Settings", Icons.Filled.Settings) { currentPage = DashboardPage.HOME }
         }
 
         if (menuOpen) {
@@ -174,7 +180,10 @@ fun DashboardHome(
     val giftsCount = 0
     val eventsCount = 0
     val notesCount = 0
-    val memoriesCount = 0
+
+    val memoryDao = remember { DatabaseProvider.getDatabase(context).memoryDao() }
+    val memories by memoryDao.getAllMemories(userId).collectAsState(initial = emptyList())
+    val memoriesCount = memories.size
 
     Column(
         modifier = Modifier

@@ -9,9 +9,10 @@ import androidx.room.RoomDatabase
         GuestEntity::class,
         BudgetEntity::class,
         RestaurantEntity::class,
-        TableEntity::class
+        TableEntity::class,
+        MemoryEntity::class
     ],
-    version = 10,
+    version = 11,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -23,4 +24,6 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun restaurantDao(): RestaurantDao
 
     abstract fun tableDao(): TableDao
+
+    abstract fun memoryDao(): MemoryDao
 }
