@@ -40,6 +40,8 @@ import java.util.concurrent.TimeUnit
 import androidx.compose.ui.platform.LocalContext
 import com.example.mywedding.data.DatabaseProvider
 import com.google.firebase.auth.FirebaseAuth
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 
 enum class DashboardPage {
     HOME, TODOS, GUESTS, BUDGET, RESTAURANTS, SEATING, GIFTS, SCHEDULE, NOTES, MEMORIES, SETTINGS
@@ -189,7 +191,8 @@ fun DashboardHome(
         modifier = Modifier
             .fillMaxSize()
             .background(Color(0xFFFFF7F3))
-            .padding(horizontal = 22.dp, vertical = 18.dp)
+            .verticalScroll(rememberScrollState())
+            .padding(start = 22.dp, end = 22.dp, top = 18.dp, bottom = 120.dp)
     ) {
         TopDashboardBar(onMenuClick = onMenuClick)
 

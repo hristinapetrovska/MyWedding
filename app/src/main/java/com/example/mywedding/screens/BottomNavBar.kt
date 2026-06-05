@@ -75,14 +75,14 @@ fun BottomNavItem(
         Icon(
             imageVector = icon,
             contentDescription = null,
-            tint = Color(0xFF8F4F5F),
+            tint = Color(0xFFB76E79),
             modifier = Modifier.size(23.dp)
         )
 
         Text(
             text = title,
             fontSize = 9.sp,
-            color = Color(0xFF8F4F5F)
+            color = Color(0xFFB76E79)
         )
     }
 }

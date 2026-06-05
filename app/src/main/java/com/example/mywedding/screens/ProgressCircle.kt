@@ -51,7 +51,7 @@ fun ProgressCircle(progress: Float) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Text(
                 text = "$percent%",
-                fontSize = 16.sp,
+                fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color(0xFF2F3D40)
             )
