@@ -42,9 +42,12 @@ import com.example.mywedding.data.DatabaseProvider
 import com.google.firebase.auth.FirebaseAuth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.filled.Category
+import androidx.compose.material.icons.filled.Contacts
+
 
 enum class DashboardPage {
-    HOME, TODOS, GUESTS, BUDGET, RESTAURANTS, SEATING, GIFTS, SCHEDULE, NOTES, MEMORIES, SETTINGS
+    HOME, TODOS, GUESTS, BUDGET, RESTAURANTS, SEATING, GIFTS, SCHEDULE, NOTES, MEMORIES, CATEGORIES, CONTACTS, SETTINGS
 }
 
 @Composable
@@ -56,6 +59,8 @@ fun DashboardScreen(
 ) {
     var currentPage by remember { mutableStateOf(DashboardPage.HOME) }
     var menuOpen by remember { mutableStateOf(false) }
+
+    var selectedTaskCategory by remember { mutableStateOf<String?>(null) }
 
     Box(modifier = Modifier.fillMaxSize()) {
         when (currentPage) {
@@ -70,10 +75,13 @@ fun DashboardScreen(
 
             DashboardPage.TODOS -> TodoScreen(
                 language = language,
+                selectedCategory = selectedTaskCategory,
                 onBackClick = {
+                    selectedTaskCategory = null
                     currentPage = DashboardPage.HOME
                 }
             )
+
             DashboardPage.GUESTS -> {
                 GuestsScreen(
                     language = language,
@@ -106,9 +114,30 @@ fun DashboardScreen(
                     }
                 )
             }
-            DashboardPage.GIFTS -> SimplePage("Gift Registry", Icons.Filled.CardGiftcard) { currentPage = DashboardPage.HOME }
-            DashboardPage.SCHEDULE -> SimplePage("Schedule", Icons.Filled.Event) { currentPage = DashboardPage.HOME }
-            DashboardPage.NOTES -> SimplePage("Notes", Icons.Filled.StickyNote2) { currentPage = DashboardPage.HOME }
+            DashboardPage.GIFTS -> {
+                GiftsScreen(
+                    language = language,
+                    onBackClick = {
+                        currentPage = DashboardPage.HOME
+                    }
+                )
+            }
+            DashboardPage.SCHEDULE -> {
+                PlanScreen(
+                    language = language,
+                    onBackClick = {
+                        currentPage = DashboardPage.HOME
+                    }
+                )
+            }
+            DashboardPage.NOTES -> {
+                NotesScreen(
+                    language = language,
+                    onBackClick = {
+                        currentPage = DashboardPage.HOME
+                    }
+                )
+            }
             DashboardPage.MEMORIES -> {
                 MemoriesScreen(
                     language = language,
@@ -116,7 +145,27 @@ fun DashboardScreen(
                         currentPage = DashboardPage.HOME
                     }
                 )
-            }            DashboardPage.SETTINGS -> SimplePage("Settings", Icons.Filled.Settings) { currentPage = DashboardPage.HOME }
+            }
+            DashboardPage.CATEGORIES -> {
+                CategoriesScreen(
+                    language = language,
+                    onBackClick = {
+                        currentPage = DashboardPage.HOME
+                    },
+                    onCategoryClick = { category ->
+                        selectedTaskCategory = category
+                        currentPage = DashboardPage.TODOS
+                    }
+                )
+            }
+
+            DashboardPage.CONTACTS -> {
+                SimplePage("Contacts", Icons.Filled.Contacts) {
+                    currentPage = DashboardPage.HOME
+                }
+            }
+
+            DashboardPage.SETTINGS -> SimplePage("Settings", Icons.Filled.Settings) { currentPage = DashboardPage.HOME }
         }
 
         if (menuOpen) {
@@ -179,9 +228,17 @@ fun DashboardHome(
     val tablesCount = tables.size
 
     val selectedRestaurants = 0
-    val giftsCount = 0
-    val eventsCount = 0
-    val notesCount = 0
+    val giftDao = remember { DatabaseProvider.getDatabase(context).giftDao() }
+    val gifts by giftDao.getAllGifts(userId).collectAsState(initial = emptyList())
+    val giftsCount = gifts.size
+
+    val planDao = remember { DatabaseProvider.getDatabase(context).planDao() }
+    val plans by planDao.getAllPlans(userId).collectAsState(initial = emptyList())
+    val eventsCount = plans.size
+
+    val noteDao = remember { DatabaseProvider.getDatabase(context).noteDao() }
+    val notes by noteDao.getAllNotes(userId).collectAsState(initial = emptyList())
+    val notesCount = notes.size
 
     val memoryDao = remember { DatabaseProvider.getDatabase(context).memoryDao() }
     val memories by memoryDao.getAllMemories(userId).collectAsState(initial = emptyList())

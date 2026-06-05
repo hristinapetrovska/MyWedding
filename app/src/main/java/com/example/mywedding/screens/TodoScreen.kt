@@ -173,6 +173,7 @@ fun defaultWeddingTasks(): List<TaskEntity> {
 @Composable
 fun TodoScreen(
     language: AppLanguage,
+    selectedCategory: String? = null,
     onBackClick: () -> Unit
 ) {
     val context = LocalContext.current
@@ -218,11 +219,20 @@ fun TodoScreen(
         }
     }
 
+    val categoryTasks =
+        if (selectedCategory == null) {
+            tasks
+        } else {
+            tasks.filter {
+                it.categoryEn == selectedCategory
+            }
+        }
+
     val filteredTasks = when (selectedFilter) {
-        "TODO" -> tasks.filter { it.status == TaskStatus.TODO.name }
-        "IN_PROGRESS" -> tasks.filter { it.status == TaskStatus.IN_PROGRESS.name }
-        "DONE" -> tasks.filter { it.status == TaskStatus.DONE.name }
-        else -> tasks
+        "TODO" -> categoryTasks.filter { it.status == TaskStatus.TODO.name }
+        "IN_PROGRESS" -> categoryTasks.filter { it.status == TaskStatus.IN_PROGRESS.name }
+        "DONE" -> categoryTasks.filter { it.status == TaskStatus.DONE.name }
+        else -> categoryTasks
     }
 
     Box(
@@ -251,7 +261,13 @@ fun TodoScreen(
                 Spacer(modifier = Modifier.weight(1f))
 
                 Text(
-                    text = if (language == AppLanguage.ENGLISH) "All To-dos" else "Сите задачи",
+                    text =
+                        if (selectedCategory != null)
+                            selectedCategory
+                        else if (language == AppLanguage.ENGLISH)
+                            "All To-dos"
+                        else
+                            "Сите задачи",
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color(0xFF2F3D40)
