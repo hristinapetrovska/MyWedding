@@ -126,28 +126,22 @@ fun SideMenu(
                 onPageClick(DashboardPage.CONTACTS)
             }
 
-            MenuItem(
-                icon = Icons.Filled.Settings,
-                title = if (language == AppLanguage.ENGLISH)
-                    "Settings"
-                else
-                    "Поставки"
-            ) {
-                onPageClick(DashboardPage.SETTINGS)
-            }
 
             Spacer(modifier = Modifier.weight(1f))
 
             Divider()
 
-            Spacer(modifier = Modifier.height(10.dp))
+
+            MenuItem(
+                icon = Icons.Filled.Settings,
+                title = if (language == AppLanguage.ENGLISH) "Settings" else "Поставки"
+            ) {
+                onPageClick(DashboardPage.SETTINGS)
+            }
 
             MenuItem(
                 icon = Icons.Filled.Logout,
-                title = if (language == AppLanguage.ENGLISH)
-                    "Logout"
-                else
-                    "Одјави се",
+                title = if (language == AppLanguage.ENGLISH) "Logout" else "Одјави се",
                 iconColor = Color.Red,
                 textColor = Color.Red
             ) {
