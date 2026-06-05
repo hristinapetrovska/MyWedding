@@ -16,7 +16,7 @@ import androidx.room.RoomDatabase
         PlanEntity::class,
         ContactEntity::class
     ],
-    version = 14,
+    version = 15,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
