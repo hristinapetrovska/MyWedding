@@ -31,6 +31,7 @@ fun SideMenu(
     groomName: String,
     weddingDate: String,
     onClose: () -> Unit,
+    onLogout: () -> Unit,
     onPageClick: (DashboardPage) -> Unit
 ) {
     Row(
@@ -150,7 +151,7 @@ fun SideMenu(
                 iconColor = Color.Red,
                 textColor = Color.Red
             ) {
-                onPageClick(DashboardPage.HOME)
+                onLogout()
             }
         }
 
