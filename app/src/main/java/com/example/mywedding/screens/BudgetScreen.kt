@@ -24,7 +24,7 @@ import com.example.mywedding.data.DatabaseProvider
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-
+import com.google.firebase.analytics.FirebaseAnalytics
 data class BudgetCategory(
     val en: String,
     val mk: String
@@ -184,6 +184,9 @@ fun BudgetScreen(
                 onDismiss = { showDialog = false },
                 onSave = { item ->
                     scope.launch(Dispatchers.IO) {
+                        FirebaseAnalytics
+                            .getInstance(context)
+                            .logEvent("budget_item_added", null)
                         if (item.id == 0) {
                             budgetDao.insertBudgetItem(item)
                         } else {

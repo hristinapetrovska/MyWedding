@@ -26,6 +26,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.flow.first
+import com.google.firebase.analytics.FirebaseAnalytics
 
 enum class TaskStatus {
     TODO, IN_PROGRESS, DONE
@@ -381,6 +382,9 @@ fun TodoScreen(
                 onDismiss = { showDialog = false },
                 onSave = { task ->
                     scope.launch(Dispatchers.IO) {
+                        FirebaseAnalytics
+                            .getInstance(context)
+                            .logEvent("task_added", null)
                         if (task.id == 0) {
                             taskDao.insertTask(task)
                         } else {

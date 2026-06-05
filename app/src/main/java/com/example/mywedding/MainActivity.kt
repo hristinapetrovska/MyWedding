@@ -16,6 +16,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.example.mywedding.screens.*
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.firestore.FirebaseFirestore
@@ -40,6 +41,7 @@ fun MyWeddingApp() {
     val context = LocalContext.current
     val auth = FirebaseAuth.getInstance()
     val firestore = FirebaseFirestore.getInstance()
+    val analytics = FirebaseAnalytics.getInstance(context)
 
     var showSplash by remember { mutableStateOf(true) }
     var selectedLanguage by remember { mutableStateOf<AppLanguage?>(null) }
@@ -61,11 +63,16 @@ fun MyWeddingApp() {
                     groomName = document.getString("groomName") ?: ""
                     weddingDate = document.getString("weddingDate") ?: ""
 
-                    if (brideName.isNotBlank() && groomName.isNotBlank() && weddingDate.isNotBlank()) {
-                        currentScreen = AppScreen.DASHBOARD
-                    } else {
-                        currentScreen = AppScreen.WEDDING_SETUP
-                    }
+                    currentScreen =
+                        if (
+                            brideName.isNotBlank() &&
+                            groomName.isNotBlank() &&
+                            weddingDate.isNotBlank()
+                        ) {
+                            AppScreen.DASHBOARD
+                        } else {
+                            AppScreen.WEDDING_SETUP
+                        }
                 } else {
                     currentScreen = AppScreen.WEDDING_SETUP
                 }
@@ -92,6 +99,8 @@ fun MyWeddingApp() {
                 groomName = groom
                 weddingDate = date
                 currentScreen = AppScreen.DASHBOARD
+
+                analytics.logEvent("wedding_data_saved", null)
             }
     }
 
@@ -108,6 +117,7 @@ fun MyWeddingApp() {
                 auth.signInWithCredential(credential)
                     .addOnCompleteListener { firebaseTask ->
                         if (firebaseTask.isSuccessful) {
+                            analytics.logEvent("google_login_success", null)
                             checkWeddingData()
                         }
                     }
@@ -146,8 +156,14 @@ fun MyWeddingApp() {
         } else {
             if (selectedLanguage == null) {
                 LanguageScreen(
-                    onEnglishClick = { selectedLanguage = AppLanguage.ENGLISH },
-                    onMacedonianClick = { selectedLanguage = AppLanguage.MACEDONIAN }
+                    onEnglishClick = {
+                        selectedLanguage = AppLanguage.ENGLISH
+                        analytics.logEvent("language_english_selected", null)
+                    },
+                    onMacedonianClick = {
+                        selectedLanguage = AppLanguage.MACEDONIAN
+                        analytics.logEvent("language_macedonian_selected", null)
+                    }
                 )
             } else {
                 when (currentScreen) {
@@ -155,9 +171,18 @@ fun MyWeddingApp() {
                         WelcomeScreen(
                             language = selectedLanguage!!,
                             onBackClick = { selectedLanguage = null },
-                            onGuestLogin = { checkWeddingData() },
-                            onRegisterClick = { currentScreen = AppScreen.REGISTER },
-                            onGoogleLogin = { startGoogleLogin() }
+                            onGuestLogin = {
+                                analytics.logEvent("guest_login_clicked", null)
+                                checkWeddingData()
+                            },
+                            onRegisterClick = {
+                                analytics.logEvent("register_screen_opened", null)
+                                currentScreen = AppScreen.REGISTER
+                            },
+                            onGoogleLogin = {
+                                analytics.logEvent("google_login_clicked", null)
+                                startGoogleLogin()
+                            }
                         )
                     }
 
@@ -165,7 +190,10 @@ fun MyWeddingApp() {
                         RegisterScreen(
                             language = selectedLanguage!!,
                             onBackClick = { currentScreen = AppScreen.WELCOME },
-                            onRegisterSuccess = { checkWeddingData() }
+                            onRegisterSuccess = {
+                                analytics.logEvent("register_success", null)
+                                checkWeddingData()
+                            }
                         )
                     }
 
@@ -180,16 +208,24 @@ fun MyWeddingApp() {
                     }
 
                     AppScreen.DASHBOARD -> {
+                        LaunchedEffect(Unit) {
+                            analytics.logEvent("dashboard_opened", null)
+                        }
+
                         DashboardScreen(
                             language = selectedLanguage!!,
                             brideName = brideName,
                             groomName = groomName,
                             weddingDate = weddingDate,
                             onLogout = {
+                                analytics.logEvent("logout_clicked", null)
+
                                 auth.signOut()
+
                                 brideName = ""
                                 groomName = ""
                                 weddingDate = ""
+
                                 currentScreen = AppScreen.WELCOME
                             },
                             onSaveWeddingData = { bride, groom, date ->
@@ -197,6 +233,8 @@ fun MyWeddingApp() {
                             },
                             onLanguageChange = { newLanguage ->
                                 selectedLanguage = newLanguage
+
+                                analytics.logEvent("language_changed_settings", null)
                             }
                         )
                     }

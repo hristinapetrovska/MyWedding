@@ -24,6 +24,7 @@ import com.example.mywedding.data.GuestEntity
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import com.google.firebase.analytics.FirebaseAnalytics
 
 enum class GuestFilter {
     ALL, BRIDE, GROOM
@@ -214,6 +215,9 @@ fun GuestsScreen(
                 onDismiss = { showDialog = false },
                 onSave = { guest ->
                     scope.launch(Dispatchers.IO) {
+                        FirebaseAnalytics
+                            .getInstance(context)
+                            .logEvent("guest_added", null)
                         if (guest.id == 0) {
                             guestDao.insertGuest(guest)
                         } else {
