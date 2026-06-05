@@ -55,7 +55,10 @@ fun DashboardScreen(
     language: AppLanguage,
     brideName: String,
     groomName: String,
-    weddingDate: String
+    weddingDate: String,
+    onLogout: () -> Unit,
+    onSaveWeddingData: (String, String, String) -> Unit,
+    onLanguageChange: (AppLanguage) -> Unit
 ) {
     var currentPage by remember { mutableStateOf(DashboardPage.HOME) }
     var menuOpen by remember { mutableStateOf(false) }
@@ -160,21 +163,40 @@ fun DashboardScreen(
             }
 
             DashboardPage.CONTACTS -> {
-                SimplePage("Contacts", Icons.Filled.Contacts) {
-                    currentPage = DashboardPage.HOME
-                }
+                ContactsScreen(
+                    language = language,
+                    onBackClick = {
+                        currentPage = DashboardPage.HOME
+                    }
+                )
             }
 
-            DashboardPage.SETTINGS -> SimplePage("Settings", Icons.Filled.Settings) { currentPage = DashboardPage.HOME }
+            DashboardPage.SETTINGS -> {
+                SettingsScreen(
+                    language = language,
+                    brideName = brideName,
+                    groomName = groomName,
+                    weddingDate = weddingDate,
+                    onBackClick = {
+                        currentPage = DashboardPage.HOME
+                    },
+                    onSaveWeddingData = onSaveWeddingData,
+                    onLanguageChange = onLanguageChange,
+                    onLogout = onLogout
+                )
+            }
         }
 
         if (menuOpen) {
-            SideMenu (
+            SideMenu(
                 language = language,
                 brideName = brideName,
                 groomName = groomName,
                 weddingDate = weddingDate,
                 onClose = { menuOpen = false },
+                onLogout = {
+                    onLogout()
+                },
                 onPageClick = {
                     currentPage = it
                     menuOpen = false
@@ -182,16 +204,18 @@ fun DashboardScreen(
             )
         }
 
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(start = 22.dp, end = 22.dp, bottom = 18.dp),
-            contentAlignment = Alignment.BottomCenter
-        ) {
-            BottomNavBar(
-                language = language,
-                onPageClick = { currentPage = it }
-            )
+        if (!menuOpen) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(start = 22.dp, end = 22.dp, bottom = 18.dp),
+                contentAlignment = Alignment.BottomCenter
+            ) {
+                BottomNavBar(
+                    language = language,
+                    onPageClick = { currentPage = it }
+                )
+            }
         }
     }
 }

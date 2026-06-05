@@ -184,7 +184,20 @@ fun MyWeddingApp() {
                             language = selectedLanguage!!,
                             brideName = brideName,
                             groomName = groomName,
-                            weddingDate = weddingDate
+                            weddingDate = weddingDate,
+                            onLogout = {
+                                auth.signOut()
+                                brideName = ""
+                                groomName = ""
+                                weddingDate = ""
+                                currentScreen = AppScreen.WELCOME
+                            },
+                            onSaveWeddingData = { bride, groom, date ->
+                                saveWeddingData(bride, groom, date)
+                            },
+                            onLanguageChange = { newLanguage ->
+                                selectedLanguage = newLanguage
+                            }
                         )
                     }
                 }
