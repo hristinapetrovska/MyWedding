@@ -20,6 +20,9 @@ import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.messaging.FirebaseMessaging
+import android.Manifest
+import android.os.Build
 
 enum class AppScreen {
     WELCOME,
@@ -42,6 +45,12 @@ fun MyWeddingApp() {
     val auth = FirebaseAuth.getInstance()
     val firestore = FirebaseFirestore.getInstance()
     val analytics = FirebaseAnalytics.getInstance(context)
+
+    FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+        if (task.isSuccessful) {
+            android.util.Log.d("FCM_TOKEN", "Token: ${task.result}")
+        }
+    }
 
     var showSplash by remember { mutableStateOf(true) }
     var selectedLanguage by remember { mutableStateOf<AppLanguage?>(null) }
@@ -137,7 +146,16 @@ fun MyWeddingApp() {
         googleLauncher.launch(googleClient.signInIntent)
     }
 
+    val notificationPermissionLauncher =
+        rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.RequestPermission()
+        ) { }
+
     LaunchedEffect(Unit) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+        }
+
         kotlinx.coroutines.delay(2500)
         showSplash = false
     }
