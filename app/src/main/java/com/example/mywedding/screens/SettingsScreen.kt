@@ -21,6 +21,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mywedding.AppLanguage
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 
 @Composable
 fun SettingsScreen(
@@ -40,8 +42,9 @@ fun SettingsScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .verticalScroll(rememberScrollState())
             .background(Color(0xFFFFF7F3))
-            .padding(start = 22.dp, end = 22.dp, top = 22.dp, bottom = 90.dp)
+            .padding(start = 22.dp, end = 22.dp, top = 22.dp, bottom = 90.dp),
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),

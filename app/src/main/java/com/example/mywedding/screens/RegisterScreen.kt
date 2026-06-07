@@ -23,6 +23,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mywedding.AppLanguage
 import com.google.firebase.auth.FirebaseAuth
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 
 @Composable
 fun RegisterScreen(
@@ -53,6 +55,7 @@ fun RegisterScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
+            .verticalScroll(rememberScrollState())
             .background(Color(0xFFFFF7F3)),
         contentAlignment = Alignment.Center
     ) {

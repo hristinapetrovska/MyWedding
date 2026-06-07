@@ -29,6 +29,8 @@ import androidx.compose.ui.unit.sp
 import com.example.mywedding.AppLanguage
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 
 @Composable
 fun RestaurantsScreen(
@@ -100,7 +102,8 @@ fun RestaurantsScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(start = 22.dp, end = 22.dp, top = 22.dp, bottom = 90.dp)
+                .verticalScroll(rememberScrollState())
+                .padding(start = 22.dp, end = 22.dp, top = 22.dp, bottom = 120.dp)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -115,7 +118,7 @@ fun RestaurantsScreen(
                         .clickable { onBackClick() }
                 )
 
-                Spacer(modifier = Modifier.weight(1f))
+                Spacer(modifier = Modifier.height(24.dp))
 
                 Text(
                     text = if (language == AppLanguage.ENGLISH) "Restaurants" else "Ресторани",
@@ -124,7 +127,7 @@ fun RestaurantsScreen(
                     color = Color(0xFF2F3D40)
                 )
 
-                Spacer(modifier = Modifier.weight(1f))
+                Spacer(modifier = Modifier.height(24.dp))
 
                 Icon(
                     imageVector = Icons.Filled.Refresh,

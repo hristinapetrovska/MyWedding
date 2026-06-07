@@ -27,6 +27,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.flow.first
 import com.google.firebase.analytics.FirebaseAnalytics
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 
 enum class TaskStatus {
     TODO, IN_PROGRESS, DONE
@@ -178,6 +181,10 @@ fun TodoScreen(
     onBackClick: () -> Unit
 ) {
     val context = LocalContext.current
+
+    val configuration = LocalConfiguration.current
+    val isLandscape = configuration.screenWidthDp > configuration.screenHeightDp
+
     val scope = rememberCoroutineScope()
     val taskDao = remember { DatabaseProvider.getDatabase(context).taskDao() }
     val userId = FirebaseAuth.getInstance().currentUser?.uid ?: "guest"
@@ -244,7 +251,8 @@ fun TodoScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(start = 22.dp, end = 22.dp, top = 22.dp, bottom = 90.dp)
+                .verticalScroll(rememberScrollState())
+                .padding(start = 22.dp, end = 22.dp, top = 22.dp, bottom = 120.dp)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -280,27 +288,66 @@ fun TodoScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                ProgressCircle(progress = progress)
+            if (isLandscape) {
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(18.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color.White)
+                ) {
+                    Column(
+                        modifier = Modifier.padding(14.dp)
+                    ) {
+                        Text(
+                            text = progressText,
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFF2F3D40)
+                        )
 
-                Spacer(modifier = Modifier.width(18.dp))
+                        Spacer(modifier = Modifier.height(8.dp))
 
-                Column {
-                    Text(
-                        text = progressText,
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color(0xFF2F3D40)
-                    )
+                        LinearProgressIndicator(
+                            progress = { progress },
+                            modifier = Modifier.fillMaxWidth(),
+                            color = Color(0xFFE95D7E),
+                            trackColor = Color(0xFFFFE1E8)
+                        )
 
-                    Text(
-                        text = if (language == AppLanguage.ENGLISH)
-                            "$completedTasks of $totalTasks tasks completed"
-                        else
-                            "$completedTasks од $totalTasks задачи завршени",
-                        fontSize = 14.sp,
-                        color = Color(0xFF7C6F73)
-                    )
+                        Spacer(modifier = Modifier.height(6.dp))
+
+                        Text(
+                            text = if (language == AppLanguage.ENGLISH)
+                                "$completedTasks of $totalTasks tasks completed"
+                            else
+                                "$completedTasks од $totalTasks задачи завршени",
+                            fontSize = 12.sp,
+                            color = Color(0xFF7C6F73)
+                        )
+                    }
+                }
+            } else {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    ProgressCircle(progress = progress)
+
+                    Spacer(modifier = Modifier.width(18.dp))
+
+                    Column {
+                        Text(
+                            text = progressText,
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFF2F3D40)
+                        )
+
+                        Text(
+                            text = if (language == AppLanguage.ENGLISH)
+                                "$completedTasks of $totalTasks tasks completed"
+                            else
+                                "$completedTasks од $totalTasks задачи завршени",
+                            fontSize = 14.sp,
+                            color = Color(0xFF7C6F73)
+                        )
+                    }
                 }
             }
 
@@ -332,8 +379,8 @@ fun TodoScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            LazyColumn {
-                items(filteredTasks, key = { it.id }) { task ->
+            Column {
+                filteredTasks.forEach { task ->
                     TaskCard(
                         task = task,
                         language = language,

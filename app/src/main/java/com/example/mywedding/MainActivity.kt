@@ -23,6 +23,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.messaging.FirebaseMessaging
 import android.Manifest
 import android.os.Build
+import androidx.compose.runtime.saveable.rememberSaveable
 
 enum class AppScreen {
     WELCOME,
@@ -52,13 +53,13 @@ fun MyWeddingApp() {
         }
     }
 
-    var showSplash by remember { mutableStateOf(true) }
-    var selectedLanguage by remember { mutableStateOf<AppLanguage?>(null) }
-    var currentScreen by remember { mutableStateOf(AppScreen.WELCOME) }
+    var showSplash by rememberSaveable { mutableStateOf(true) }
+    var selectedLanguage by rememberSaveable { mutableStateOf<AppLanguage?>(null) }
+    var currentScreen by rememberSaveable { mutableStateOf(AppScreen.WELCOME) }
 
-    var brideName by remember { mutableStateOf("") }
-    var groomName by remember { mutableStateOf("") }
-    var weddingDate by remember { mutableStateOf("") }
+    var brideName by rememberSaveable { mutableStateOf("") }
+    var groomName by rememberSaveable { mutableStateOf("") }
+    var weddingDate by rememberSaveable { mutableStateOf("") }
 
     fun checkWeddingData() {
         val uid = auth.currentUser?.uid ?: return

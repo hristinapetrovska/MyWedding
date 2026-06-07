@@ -28,6 +28,8 @@ import com.google.firebase.auth.FirebaseAuth
 import androidx.compose.foundation.Image
 import androidx.compose.ui.res.painterResource
 import com.example.mywedding.R
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 
 @Composable
 fun WelcomeScreen(
@@ -48,7 +50,7 @@ fun WelcomeScreen(
         modifier = Modifier
             .fillMaxSize()
             .background(Color(0xFFFFF7F3))
-            .padding(horizontal = 28.dp),
+            .padding(horizontal = 20.dp),
         contentAlignment = Alignment.Center
     ) {
         IconButton(
@@ -65,7 +67,9 @@ fun WelcomeScreen(
         }
 
         Column(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
@@ -77,7 +81,7 @@ fun WelcomeScreen(
 
             Text(
                 text = "MyWedding",
-                fontSize = 38.sp,
+                fontSize = 32.sp,
                 fontWeight = FontWeight.ExtraBold,
                 color = Color(0xFFE95D7E),
                 fontFamily = FontFamily.Serif
@@ -91,7 +95,7 @@ fun WelcomeScreen(
                 color = Color(0xFF5F4B51)
             )
 
-            Spacer(modifier = Modifier.height(34.dp))
+            Spacer(modifier = Modifier.height(20.dp))
 
             TextField(
                 value = email,

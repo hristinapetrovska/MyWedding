@@ -44,6 +44,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.filled.Category
 import androidx.compose.material.icons.filled.Contacts
+import androidx.compose.ui.platform.LocalConfiguration
 
 
 enum class DashboardPage {
@@ -230,6 +231,17 @@ fun DashboardHome(
     onPageClick: (DashboardPage) -> Unit
 ) {
     val daysLeft = calculateDaysLeft(weddingDate)
+
+    val configuration = LocalConfiguration.current
+    val isLandscape = configuration.screenWidthDp > configuration.screenHeightDp
+
+    val horizontalPadding = if (isLandscape) 34.dp else 22.dp
+    val topPadding = if (isLandscape) 12.dp else 18.dp
+    val bottomPadding = if (isLandscape) 90.dp else 120.dp
+
+    val titleFont = if (isLandscape) 18.sp else 22.sp
+    val namesFont = if (isLandscape) 22.sp else 26.sp
+
     val context = LocalContext.current
     val taskDao = remember { DatabaseProvider.getDatabase(context).taskDao() }
     val userId = FirebaseAuth.getInstance().currentUser?.uid ?: "guest"
@@ -273,8 +285,12 @@ fun DashboardHome(
             .fillMaxSize()
             .background(Color(0xFFFFF7F3))
             .verticalScroll(rememberScrollState())
-            .padding(start = 22.dp, end = 22.dp, top = 18.dp, bottom = 120.dp)
-    ) {
+            .padding(
+                start = horizontalPadding,
+                end = horizontalPadding,
+                top = topPadding,
+                bottom = bottomPadding
+            )    ) {
         TopDashboardBar(onMenuClick = onMenuClick)
 
         Spacer(modifier = Modifier.height(20.dp))
@@ -286,13 +302,13 @@ fun DashboardHome(
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = if (language == AppLanguage.ENGLISH) "Hello," else "Здраво,",
-                    fontSize = 22.sp,
+                    fontSize = titleFont,
                     color = Color(0xFF2F3D40)
                 )
 
                 Text(
                     text = "$brideName & $groomName",
-                    fontSize = 26.sp,
+                    fontSize = namesFont,
                     fontWeight = FontWeight.Bold,
                     color = Color(0xFF2F3D40)
                 )
@@ -328,7 +344,8 @@ fun DashboardHome(
 
         CountdownCard(
             language = language,
-            daysLeft = daysLeft
+            daysLeft = daysLeft,
+            compact = isLandscape
         )
 
         Spacer(modifier = Modifier.height(18.dp))
@@ -482,12 +499,13 @@ fun TopDashboardBar(onMenuClick: () -> Unit) {
 @Composable
 fun CountdownCard(
     language: AppLanguage,
-    daysLeft: Long
+    daysLeft: Long,
+    compact: Boolean = false
 ) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .height(220.dp),
+            .height(if (compact) 135.dp else 220.dp),
         shape = RoundedCornerShape(24.dp),
         colors = CardDefaults.cardColors(containerColor = Color(0xFFFFE1E8))
     ) {
@@ -506,7 +524,7 @@ fun CountdownCard(
             ) {
                 Text(
                     text = daysLeft.toString(),
-                    fontSize = 52.sp,
+                    fontSize = if (compact) 34.sp else 52.sp,
                     fontWeight = FontWeight.ExtraBold,
                     color = Color(0xFFE95D7E)
                 )

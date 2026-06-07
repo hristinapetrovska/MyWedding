@@ -23,6 +23,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mywedding.AppLanguage
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 
 @Composable
 fun SideMenu(
@@ -43,6 +45,7 @@ fun SideMenu(
                 .fillMaxHeight()
                 .width(300.dp)
                 .background(Color(0xFFFFF7F3))
+                .verticalScroll(rememberScrollState())
                 .padding(20.dp)
         ) {
 
@@ -56,32 +59,23 @@ fun SideMenu(
 
             Spacer(modifier = Modifier.height(18.dp))
 
-            Card(
-                shape = RoundedCornerShape(22.dp),
-                colors = CardDefaults.cardColors(
-                    containerColor = Color.White
-                )
+            Column(
+                modifier = Modifier.padding(start = 2.dp)
             ) {
+                Text(
+                    text = "$brideName & $groomName",
+                    fontSize = 19.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color(0xFF2F3D40)
+                )
 
-                Column(
-                    modifier = Modifier.padding(16.dp)
-                ) {
+                Spacer(modifier = Modifier.height(6.dp))
 
-                    Text(
-                        text = "$brideName & $groomName",
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color(0xFF2F3D40)
-                    )
-
-                    Spacer(modifier = Modifier.height(6.dp))
-
-                    Text(
-                        text = weddingDate,
-                        fontSize = 13.sp,
-                        color = Color(0xFF8F4F5F)
-                    )
-                }
+                Text(
+                    text = weddingDate,
+                    fontSize = 14.sp,
+                    color = Color(0xFF8F4F5F)
+                )
             }
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -127,7 +121,7 @@ fun SideMenu(
             }
 
 
-            Spacer(modifier = Modifier.weight(1f))
+            Spacer(modifier = Modifier.height(24.dp))
 
             Divider()
 
