@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">MyWedding</string>
+    <string name="home">Дома</string>
+    <string name="all_tasks">Сите задачи</string>
+    <string name="categories">Категории</string>
+    <string name="contacts">Контакти</string>
+    <string name="settings">Поставки</string>
+    <string name="logout">Одјави се</string>
+    <string name="guests">Гости</string>
+    <string name="budget">Буџет</string>
+    <string name="restaurants">Ресторани</string>
+    <string name="seating">Маси</string>
+    <string name="gifts">Подароци</string>
+    <string name="schedule">План</string>
+    <string name="notes">Белешки</string>
+    <string name="memories">Спомени</string>
+</resources>
